@@ -8,7 +8,7 @@ export default function Logo(){
       letterSpacing="tight"
       w="64"
     >
-      dashgo
+      projectdash
       <Text as="span" ml="1" color="pink.500">.</Text>
     </Text>
   )
