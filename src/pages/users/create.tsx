@@ -1,10 +1,17 @@
-import {Flex, Box, Heading, Divider, VStack, SimpleGrid, HStack, Button} from '@chakra-ui/react'
-import Link from 'next/link'
-import { Input } from '../../components/Form/Input';
+import {Flex, Heading, Icon, Table, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue} from '@chakra-ui/react'
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { RiAddLine, RiPencilLine } from 'react-icons/ri';
 import {Header} from '../../components/Header'
+import { Pagination } from '../../components/Pagination';
 import { Sidebar } from '../../components/Sidebar';
 
-export default function CreateU(){
+export default function UserList(){
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    lg: true,
+  })
+
   return (
     <Box>
       <Header />
@@ -15,31 +22,135 @@ export default function CreateU(){
           flex="1"
           borderRadius={8}
           bg="gray.800"
-          p={["6", "8"]}
+          p="8"
         >
-          <Heading size="lg" fontWeight="normal">Criar usuário</Heading>
+          <Flex
+            mb="8"
+            justify="space-between"
+            align="center"
+          >
+            <Heading size="lg" fontWeight="normal">Usuários</Heading>
 
-          <Divider my="6" borderColor="gray.700"/>
+            <Link  href="/users/create" passHref>
+              <Button
+                as="a"
+                size="sm"
+                fontSize="sm"
+                colorScheme="pink"
+                leftIcon={<Icon as={RiAddLine} fontSize="20"/>}
+              >
+                Criar novo
+              </Button>
+            </Link>
 
-          <VStack spacing="8">
-            <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-              <Input name="name" label="Nome Completo" />
-              <Input name="email" label="E-mail" type="email" />
-            </SimpleGrid>
-            <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-              <Input name="password" type="password" label="Senha" />
-              <Input name="password_confirmation" type="password" label="Confirmação da senha" />
-            </SimpleGrid>
-          </VStack>
-
-          <Flex mt="8" justify="flex-end">
-            <HStack spacing="4">
-              <Link  href="/users" passHref>
-                <Button as="a" colorScheme="whiteAlpha">Cancelar</Button>
-              </Link>
-              <Button colorScheme="pink">Salvar</Button>
-            </HStack>
           </Flex>
+          <Table colorScheme="whiteAlpha">
+            <Thead>
+              <Tr>
+                <Th px="6" color="gray.300" width="8">
+                  <Checkbox colorScheme="pink"/>
+                </Th>
+                <Th>Usuário</Th>
+                {isWideVersion && <Th>Data de Cadastro</Th>}
+                <Th w="8"></Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              <Tr>
+                <Td px={["4", "4", "6"]}>
+                  <Checkbox colorScheme="pink"/>
+                </Td>
+                <Td>
+                  <Box>
+                    <Text fontWeight="bold" >Wolgrand Neto</Text>
+                    <Text fontSize="sm" color="gray.300" >wolgrand@email.com</Text>
+                  </Box>
+                </Td>
+                {isWideVersion && <Td>07 de Abril de 2021</Td>}
+                <Td>
+                  <Button
+                    as="a"
+                    size="sm"
+                    fontSize="sm"
+                    colorScheme="purple"
+                    leftIcon={<Icon as={RiPencilLine} fontSize="16"/>}
+                  >
+                    {isWideVersion && "Editar"}
+                  </Button>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td px={["4", "4", "6"]}>
+                  <Checkbox colorScheme="pink"/>
+                </Td>
+                <Td>
+                  <Box>
+                    <Text fontWeight="bold" >Wolgrand Neto</Text>
+                    <Text fontSize="sm" color="gray.300" >wolgrand@email.com</Text>
+                  </Box>
+                </Td>
+                {isWideVersion && <Td>07 de Abril de 2021</Td>}
+                <Td>
+                  <Button
+                    as="a"
+                    size="sm"
+                    fontSize="sm"
+                    colorScheme="purple"
+                    leftIcon={<Icon as={RiPencilLine} fontSize="16"/>}
+                  >
+                    {isWideVersion && "Editar"}
+                  </Button>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td px={["4", "4", "6"]}>
+                  <Checkbox colorScheme="pink"/>
+                </Td>
+                <Td>
+                  <Box>
+                    <Text fontWeight="bold" >Wolgrand Neto</Text>
+                    <Text fontSize="sm" color="gray.300" >wolgrand@email.com</Text>
+                  </Box>
+                </Td>
+                {isWideVersion && <Td>07 de Abril de 2021</Td>}
+                <Td>
+                  <Button
+                    as="a"
+                    size="sm"
+                    fontSize="sm"
+                    colorScheme="purple"
+                    leftIcon={<Icon as={RiPencilLine} fontSize="16"/>}
+                  >
+                    {isWideVersion && "Editar"}
+                  </Button>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td px={["4", "4", "6"]}>
+                  <Checkbox colorScheme="pink"/>
+                </Td>
+                <Td>
+                  <Box>
+                    <Text fontWeight="bold" >Wolgrand Neto</Text>
+                    <Text fontSize="sm" color="gray.300" >wolgrand@email.com</Text>
+                  </Box>
+                </Td>
+                {isWideVersion && <Td>07 de Abril de 2021</Td>}
+                <Td>
+                  <Button
+                    as="a"
+                    size="sm"
+                    fontSize="sm"
+                    colorScheme="purple"
+                    leftIcon={<Icon as={RiPencilLine} fontSize="16"/>}
+                  >
+                    {isWideVersion && "Editar"}
+                  </Button>
+                </Td>
+              </Tr>
+            </Tbody>
+          </Table>
+          <Pagination />
         </Box>
       </Flex>
     </Box>

@@ -43,6 +43,26 @@ export default function Dashboard() {
       <Flex w="100%" my="6" maxWidth={1480} mx="auto" px="6">
         
         <ContentSidebar />
+        <Flex direction="column" flex="1">
+
+        <Box
+              px={["4"]}
+              py={["2"]}
+              bg="gray.800"
+              borderRadius={8}
+              pb="4"
+              mb="4"
+              key={Math.random().toString(36).substring(7)}
+            >
+              <Text fontSize="x-small" fontWeight="bold" color="gray.400">Filtro por Status</Text>
+              <HStack mt="2" justify="flex-start">
+                <Tag  colorScheme={'green'}>No prazo</Tag>
+                <Tag  colorScheme={'red'}>Atrasado</Tag>
+                <Tag fontSize="small" fontWeight="bold">Não iniciado</Tag>
+                <Tag fontSize="small" fontWeight="bold">Em andamento</Tag>
+                <Tag fontSize="small" fontWeight="bold">Atrasado</Tag>
+              </HStack>
+            </Box>
         <SimpleGrid mb="4" flex="1" gap="4" minChildWidth="256px" align="flex-start">
           {projects?.map(item=>(
             <Box
@@ -85,6 +105,7 @@ export default function Dashboard() {
           ))}
           
         </SimpleGrid>
+        </Flex>
       </Flex>
     </Flex>
   )

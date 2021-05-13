@@ -1,5 +1,6 @@
-import {Icon, HStack} from '@chakra-ui/react'
-import { RiNotificationLine, RiUserAddLine } from 'react-icons/ri'
+import {Icon, HStack, Tooltip} from '@chakra-ui/react'
+import Link from 'next/link'
+import { RiNotificationLine, RiFile3Line } from 'react-icons/ri'
 
 export default function NotificationsNav() {
   return (
@@ -13,7 +14,11 @@ export default function NotificationsNav() {
       borderColor="gray.700"
     >
       <Icon as={RiNotificationLine} fontSize="20" />
-      <Icon as={RiUserAddLine} fontSize="20" />
+      <Tooltip cursor="pointer" hasArrow label="Projetos" bg="gray.100" color="black" shouldWrapChildren>
+        <Link  href="/projects">
+          <Icon cursor="pointer" as={RiFile3Line} fontSize="20" />
+        </Link>
+      </Tooltip>
     </HStack>
   )
 }
