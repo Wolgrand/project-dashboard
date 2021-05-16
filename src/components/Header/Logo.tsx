@@ -7,6 +7,7 @@ export default function Logo(){
       fontWeight="bold"
       letterSpacing="tight"
       w="64"
+      color="white"
     >
       projectdash
       <Text as="span" ml="1" color="pink.500">.</Text>

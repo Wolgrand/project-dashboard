@@ -5,6 +5,7 @@ import { RiAddLine, RiPencilLine } from 'react-icons/ri';
 import {Header} from '../../../components/Header'
 import { Pagination } from '../../../components/Pagination';
 import { Sidebar } from '../../../components/Sidebar';
+import { withSSRAuth } from '../../../utils/withSSRAuth';
 
 export default function UserList(){
   const isWideVersion = useBreakpointValue({
@@ -116,3 +117,9 @@ export default function UserList(){
     </Box>
   )
 }
+export const getServerSideProps = withSSRAuth(async (ctx) => {
+
+  return {
+   props: {}
+ }
+})

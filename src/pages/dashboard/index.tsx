@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic';
 import { ContentSidebar } from '../../components/ContentSidebar';
 import {Header} from '../../components/Header'
 import { Sidebar } from '../../components/Sidebar'
+import { withSSRAuth } from '../../utils/withSSRAuth';
 
 type Project = {
   title: string,
@@ -110,3 +111,10 @@ export default function Dashboard() {
     </Flex>
   )
 }
+
+export const getServerSideProps = withSSRAuth(async (ctx) => {
+
+  return {
+   props: {}
+ }
+})
