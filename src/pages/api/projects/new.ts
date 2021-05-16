@@ -2,6 +2,13 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { query as q } from 'faunadb';
 import { fauna } from "../../../services/fauna";
 
+type Etapa = {
+  etapa: string,
+  startDate: Date,
+  finishDate: Date,
+  avancoPrevisto: number,
+  avancoReal: number
+}
 
 type ProjectReq = {
     title: string,
@@ -9,46 +16,9 @@ type ProjectReq = {
     finishDate: Date,
     avancoPrevisto: string,
     avancoReal: string,
-    etapas: {
-      terreno?: {
-        startDate: Date,
-        finishDate: Date,
-        avancoPrevisto: number,
-        avancoReal: number
-      },
-      projeto?: {
-        startDate: Date,
-        finishDate: Date,
-        avancoPrevisto: number,
-        avancoReal: number
-      },
-      ambiental?: {
-        startDate: Date,
-        finishDate: Date,
-        avancoPrevisto: number,
-        avancoReal: number
-      },
-      fundiario?: {
-        startDate: Date,
-        finishDate: Date,
-        avancoPrevisto: number,
-        avancoReal: number
-      },
-      materiais?: {
-        startDate: Date,
-        finishDate: Date,
-        avancoPrevisto: number,
-        avancoReal: number
-      },
-      execução?: {
-        startDate: Date,
-        finishDate: Date,
-        avancoPrevisto: number,
-        avancoReal: number
-      },
-    
-  }
+    etapas: Etapa[]      
 }
+
 type ProjectRes = {
   ref: {
       id: string;
@@ -60,45 +30,8 @@ type ProjectRes = {
     finishDate: Date,
     avancoPrevisto: string,
     avancoReal: string,
-    etapas: {
-      terreno?: {
-        startDate: Date,
-        finishDate: Date,
-        avancoPrevisto: number,
-        avancoReal: number
-      },
-      projeto?: {
-        startDate: Date,
-        finishDate: Date,
-        avancoPrevisto: number,
-        avancoReal: number
-      },
-      ambiental?: {
-        startDate: Date,
-        finishDate: Date,
-        avancoPrevisto: number,
-        avancoReal: number
-      },
-      fundiario?: {
-        startDate: Date,
-        finishDate: Date,
-        avancoPrevisto: number,
-        avancoReal: number
-      },
-      materiais?: {
-        startDate: Date,
-        finishDate: Date,
-        avancoPrevisto: number,
-        avancoReal: number
-      },
-      execução?: {
-        startDate: Date,
-        finishDate: Date,
-        avancoPrevisto: number,
-        avancoReal: number
-      },
-    }
-  }
+    etapas: Etapa[] 
+}
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse<ProjectRes | any >) => {
@@ -112,7 +45,9 @@ export default async (req: NextApiRequest, res: NextApiResponse<ProjectRes | any
             title,
             startDate,
             finishDate,
-            etapas,
+            etapas:{
+              
+            },
             avancoPrevisto,
             avancoReal
           },
