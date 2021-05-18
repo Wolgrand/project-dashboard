@@ -1,17 +1,58 @@
 import {Flex, Heading, Icon, Table, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue} from '@chakra-ui/react'
+import { format, parseISO } from 'date-fns';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { RiAddLine, RiPencilLine } from 'react-icons/ri';
+import { useQuery } from 'react-query';
 import {Header} from '../../components/Header'
 import { Pagination } from '../../components/Pagination';
 import { Sidebar } from '../../components/Sidebar';
+import { api } from '../../services/apiClient';
 import { withSSRAuth } from '../../utils/withSSRAuth';
+
+type Etapa = {
+  etapa: string,
+  startDate: Date,
+  finishDate: Date,
+  avancoPrevisto: number,
+  avancoReal: number
+}
+
+
+type ProjectProps = {
+    id:string,
+    title: string,
+    startDate: Date,
+    finishDate: Date,
+    updatedAt: Date,
+    avancoPrevisto: number,
+    avancoReal: number,
+
+}
 
 export default function UserList(){
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
   })
+
+  const { data, isLoading, error} = useQuery<ProjectProps[]>('projects', async () => {
+    const response = await api.get('/projects')
+    
+    const projects = response.data.map(project => {
+      return {
+        id: project['ref']['@ref'].id,
+        updatedAt: format(new Date(project.ts / 1000), 'dd/MM/yyyy'),
+        title: project.data.title,
+        startDate:  format(parseISO(project.data.startDate), 'dd/MM/yyyy'),
+        finishDate: format(parseISO(project.data.finishDate), 'dd/MM/yyyy'),
+        avancoPrevisto: project.data.avancoPrevisto,
+        avancoReal: project.data.avancoReal,
+      };
+    })
+    return projects.sort((a,b) => (a.title > b.title) ? 1 : -1);
+  })
+
 
   return (
     <Box>
@@ -56,28 +97,31 @@ export default function UserList(){
               </Tr>
             </Thead>
             <Tbody>
-              <Tr>
+              {data?.map(item =>(
+                <Tr key={item.id}>
                 <Td>
                   <Box>
-                    <Text fontWeight="bold" >29295 - RECAPACITAÇÃO DO ALIMENTADOR DA SE SENADOR GUIOMARD</Text>
+                    <Text fontWeight="bold" >{item.title}</Text>
                   </Box>
                 </Td>
-                <Td>01/01/2021</Td>
-                <Td>15/04/2021</Td>
-                <Td>12/05/2023</Td>
+                <Td>{item.startDate}</Td>
+                <Td>{item.finishDate}</Td>
+                <Td>{item.updatedAt}</Td>
                 <Td>
-                  <Button
-                    as="a"
-                    size="sm"
-                    fontSize="sm"
-                    colorScheme="purple"
-                    leftIcon={<Icon as={RiPencilLine} fontSize="16"/>}
-                  >
-                    {isWideVersion && "Editar"}
-                  </Button>
+                  <Link href={`/projects/edit/${item.id}`} passHref>
+                      <Button
+                        as="a"
+                        size="sm"
+                        fontSize="sm"
+                        colorScheme="purple"
+                        leftIcon={<Icon as={RiPencilLine} fontSize="16"/>}
+                      >
+                        {isWideVersion && "Editar"}
+                      </Button>
+                  </Link>
                 </Td>
               </Tr>
-              
+              ))}
             </Tbody>
           </Table>
           <Pagination />
