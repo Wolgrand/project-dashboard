@@ -1,4 +1,4 @@
-import {Flex, Heading, Icon, Table, Input, HStack, Tag, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue} from '@chakra-ui/react'
+import {Flex, Heading, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Icon, NumberInput, Table, Input, HStack, Tag, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue, useToast} from '@chakra-ui/react'
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { RiAddLine, RiPencilLine } from 'react-icons/ri';
@@ -9,6 +9,7 @@ import { Sidebar } from '../../../components/Sidebar';
 import { api } from '../../../services/apiClient';
 import { withSSRAuth } from '../../../utils/withSSRAuth';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 type Etapa = {
   etapa: string,
@@ -22,11 +23,11 @@ type Etapa = {
 type ProjectProps = {
     id:string,
     title: string,
-    startDate: Date,
-    finishDate: Date,
+    startDate: string,
+    finishDate: string,
     avancoPrevisto: number,
     avancoReal: number,
-    etapas: Etapa[]
+    etapas: Etapa[],
 
 }
 
@@ -37,16 +38,64 @@ export default function PriojectEdit(){
   })
 
   const router = useRouter()
+  const toast = useToast()
   const {id} = router.query
 
   const { data, isLoading, error} = useQuery<ProjectProps>('projects', async () => {
     const response = await api.get(`/projects/${id}`)
-    return response.data;
+
+    const project:ProjectProps = {
+      id: `${id}`,
+      title: response.data.title,
+      startDate: response.data.startDate,
+      finishDate: response.data.finishDate,
+      avancoPrevisto: response.data.avancoPrevisto,
+      avancoReal: response.data.avancoReal,
+      etapas: response.data.etapas
+    }
+    return project;
   })
 
-  const etapas = {}
+  const [project, setProject] = useState<ProjectProps>()
 
 
+  useEffect(()=>(
+    setProject(data)
+  ),[data])
+
+  function updateEtapaField(index: number, field: string, value: any){
+    let updadetProject = {...project}
+    updadetProject.etapas[index][field] = value
+    console.log(updadetProject)
+    setProject(updadetProject)
+  }
+
+  function updateProjectField(field: string, value: any){
+    let updadetProject = {...project}
+    updadetProject[field] = value
+    console.log(updadetProject)
+    setProject(updadetProject)
+  }
+
+  async function handleSaveChangesToProject() {
+    try {
+      const data = project
+      await api.post(`/projects/${id}`, data).then(response => toast({
+        title: "Projeto atualizado com sucesso",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      }) ).catch(error => toast({
+        title: "Erro na atualização do projeto.",
+        description: "Tente novamente mais tarde.",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      }))
+    }catch(err) {
+      console.log(err)
+    }
+  }
 
   return (
     <Box>
@@ -69,8 +118,35 @@ export default function PriojectEdit(){
            
 
           </Flex>
-            <Text color="gray.300" fontSize="smaller">Nome do projeto</Text>
-            <Text>{data?.title}</Text>
+          <Stack>
+            <Stack>
+              <Text color="gray.300" fontSize="smaller">Nome do projeto</Text>
+              <Text>{project?.title}</Text>
+            </Stack>
+            <HStack flex="1">
+              <Stack>
+                <Text color="gray.300" fontSize="smaller">Data de Início</Text>
+                <Input name={`data-inicio-${project?.title}`} type="date"  defaultValue={project?.startDate}/>
+              </Stack>
+              <Stack>
+                <Text color="gray.300" fontSize="smaller">Data de Conclusão</Text>
+                <Input name={`data-fim-${project?.title}`} type="date"  defaultValue={project?.finishDate}/>
+              </Stack>
+              <Stack>
+                <Text color="gray.300" fontSize="smaller">Av. Previsto</Text>
+                <NumberInput colorScheme="gray.500" errorBorderColor="red.500" name={`avanco-previsto-${project?.title}`} min={0} max={100}  value={project?.avancoPrevisto} onChange={(value)=>updateProjectField('avancoPrevisto', Number(value))} >
+                  <NumberInputField />
+                </NumberInput>
+              </Stack>
+              <Stack>
+                <Text color="gray.300" fontSize="smaller">Av. Real</Text>
+                <NumberInput border="gray.500" errorBorderColor="red.500" name={`avanco-previsto-${project?.title}`} min={0} max={100}  value={project?.avancoReal} onChange={(value)=>updateProjectField('avancoReal', Number(value))} >
+                  <NumberInputField />
+                </NumberInput>
+              </Stack>
+            </HStack>
+          </Stack>
+            
           <Table mt="4" colorScheme="whiteAlpha">
             <Thead>
               <Tr>
@@ -82,17 +158,17 @@ export default function PriojectEdit(){
               </Tr>
             </Thead>
             <Tbody>
-              {data?.etapas.map(etapa => (
-                <Tr key={etapa.etapa}>
+               {project?.etapas?.map((item, index) => (
+                <Tr key={item.etapa}>
                   <Td>
-                    {etapa.etapa}
+                    {item.etapa}
                   </Td>
-                  <Td><Input name={`data-inicio-${etapa.etapa}`} type="date"  defaultValue={etapa.startDate}/></Td>
-                  <Td><Input name={`data-conclusao-${etapa.etapa}`} type="date"  defaultValue={etapa.finishDate}/></Td>
-                  <Td><Input name={`avanco-previsto-${etapa.etapa}`} type="number" min="0"  defaultValue={etapa.avancoPrevisto}/></Td>
-                  <Td><Input name={`avanco-real-${etapa.etapa}`} type="number" min="0"  defaultValue={etapa.avancoReal}/></Td>
+                  <Td><Input name={`data-inicio-${item}`} type="date"  defaultValue={item.startDate}/></Td>
+                  <Td><Input name={`data-conclusao-${item}`} type="date"  defaultValue={item.finishDate} onChange={e => updateEtapaField(index,'finishDate', e.target.value)}/></Td>
+                  <Td><Input name={`avanco-previsto-${item}`} type="number" min="0"  defaultValue={item.avancoPrevisto} onChange={e => updateEtapaField(index,'avancoPrevisto', Number(e.target.value))}/></Td>
+                  <Td><Input name={`avanco-real-${item}`} type="number" min="0"  defaultValue={item.avancoReal} onChange={e => updateEtapaField(index,'avancoReal', Number(e.target.value))}/></Td>
               </Tr>
-              ))}
+              ))} 
               
                 
             </Tbody>
@@ -103,7 +179,7 @@ export default function PriojectEdit(){
               <Link  href="/projects" passHref>
                 <Button as="a" colorScheme="whiteAlpha">Cancelar</Button>
               </Link>
-              <Button colorScheme="pink">Atualizar</Button>
+              <Button colorScheme="pink" onClick={()=>handleSaveChangesToProject()}>Atualizar</Button>
             </HStack>
           </Flex>
         </Box>

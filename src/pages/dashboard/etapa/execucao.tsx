@@ -50,10 +50,10 @@ export default function Dashboard() {
       return {
         id: project.id,
         title: project.title,
-        startDate: format(parseISO(project.etapa.startDate), 'dd/MM/yyyy'),
-        finishDate: format(parseISO(project.etapa.finishDate), 'dd/MM/yyyy'),
-        avancoPrevisto: project.etapa.avancoPrevisto,
-        avancoReal: project.etapa.avancoReal,
+        startDate: format(parseISO(project.etapa[0].startDate), 'dd/MM/yyyy'),
+        finishDate: format(parseISO(project.etapa[0].finishDate), 'dd/MM/yyyy'),
+        avancoPrevisto: project.etapa[0].avancoPrevisto,
+        avancoReal: project.etapa[0].avancoReal,
       };
     })
     return projects.sort((a,b) => (a.title > b.title) ? 1 : -1);

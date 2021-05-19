@@ -38,20 +38,17 @@ export default function CreateProject(){
       finishDate: projectFinishDate,
       avancoPrevisto: 0,
       avancoReal: 0,
-      etapas:{}
+      etapas:[]
     }
-    let steps = {}
 
-    terrenoApplicable ? project.etapas['terreno']={startDate: terrenoStartDate, finishDate: terrenoFinishDate, avancoPrevisto: 0, avancoReal: 0} : null
-    projetoApplicable ? project.etapas['projeto']= {startDate: projetoStartDate, finishDate: projetoFinishDate, avancoPrevisto: 0, avancoReal: 0} : null
-    ambientalApplicable ? project.etapas['ambiental']= {startDate: ambientalStartDate, finishDate: ambientalFinishDate, avancoPrevisto: 0, avancoReal: 0} : null
-    fundiarioApplicable ? project.etapas['fundiario']= {startDate: fundiarioStartDate, finishDate: fundiarioFinishDate, avancoPrevisto: 0, avancoReal: 0} : null
-    materiaisApplicable ? project.etapas['materiais']= {startDate: materiaisStartDate, finishDate: materiaisFinishDate, avancoPrevisto: 0, avancoReal: 0} : null
-    execucaoApplicable ? project.etapas['execucao']= {startDate: execucaoStartDate, finishDate: execucaoFinishDate, avancoPrevisto: 0, avancoReal: 0} : null
 
-    //project.etapas.push(steps)
+    terrenoApplicable ? project.etapas.push({etapa:'terreno', startDate: terrenoStartDate, finishDate: terrenoFinishDate, avancoPrevisto: 0, avancoReal: 0}) : null
+    projetoApplicable ? project.etapas.push( {etapa:'projeto', startDate: projetoStartDate, finishDate: projetoFinishDate, avancoPrevisto: 0, avancoReal: 0}) : null
+    ambientalApplicable ? project.etapas.push( {etapa:'ambiental', startDate: ambientalStartDate, finishDate: ambientalFinishDate, avancoPrevisto: 0, avancoReal: 0}) : null
+    fundiarioApplicable ? project.etapas.push( {etapa:'fundiario', startDate: fundiarioStartDate, finishDate: fundiarioFinishDate, avancoPrevisto: 0, avancoReal: 0}) : null
+    materiaisApplicable ? project.etapas.push( {etapa:'materiais', startDate: materiaisStartDate, finishDate: materiaisFinishDate, avancoPrevisto: 0, avancoReal: 0}) : null
+    execucaoApplicable ? project.etapas.push( {etapa:'execucao', startDate: execucaoStartDate, finishDate: execucaoFinishDate, avancoPrevisto: 0, avancoReal: 0}) : null
 
-    console.log(project)
     
 
     try {
