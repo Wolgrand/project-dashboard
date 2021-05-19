@@ -25,7 +25,7 @@ type ProjectRes = {
       finishDate: Date,
       avancoPrevisto: string,
       avancoReal: string,
-      etapas: Etapa[] 
+      etapas: {}
     }
 }
 
@@ -46,20 +46,23 @@ export default async (req: NextApiRequest, res: NextApiResponse<ProjectResponse[
             // make paginatable
             q.Match(
               // query index
-              q.Index('project_by_etapa'),
-               etapa  // specify source
+              q.Index('all_projects')
+                 // specify source
             )
           ),
           (ref) => q.Get(ref) // lookup each result by its reference
         )
       );
       // ok
-
-      const response = projects.data.map(project => ({
-        'id': project.ref.id,
-        'title': project.data.title,
-        'etapa': project.data.etapas.filter(item => item.etapa === etapa)
+      
+      const response = projects.data.filter(project => 
+        project.data.etapas[etapa.toString()]
+      ).map(item => ({
+        'id': item.ref.id,
+        'title': item.data.title,
+        'etapa': item.data.etapas[etapa.toString()]
       }))
+
       
       // ok
       res.status(200).json(response);

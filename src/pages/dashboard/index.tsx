@@ -48,10 +48,32 @@ export default function Dashboard() {
 
 
   const [projectsList, setProjectsList] = useState<ProjectProps[]>([])
+  const [allProjects, setAllProjects] = useState(0)
+  const [projectsOnTime, setProjectsOnTime] = useState(0)
+  const [projectsWithDelay, setProjectsWithDelay] = useState(0)
+  const [projectsNotStarted, setProjectsNotStarted] = useState(0)
+  const [projectsOnGoing, setProjectsOnGoing] = useState(0)
+  const [projectsFinished, setProjectsFinished] = useState(0)
+
+  const projectOnTime = data?.filter(item => item.avancoPrevisto <= item.avancoReal).length
+  const projectWithDelay = data?.filter(item => item.avancoPrevisto > item.avancoReal).length
+  const projectNotStarted = data?.filter(item => item.avancoReal === 0).length
+  const projectOnTGoing= data?.filter(item => item.avancoReal > 0 && item.avancoReal < 100).length
+  const projectFinished= data?.filter(item => item.avancoReal === 100).length
 
   useEffect(()=>(
-    setProjectsList(data)
+
+    setProjectsList(data),
+    setAllProjects(data?.length),
+    setProjectsOnTime(projectOnTime),
+    setProjectsWithDelay(projectWithDelay),
+    setProjectsNotStarted(projectNotStarted),
+    setProjectsOnGoing(projectOnTGoing),
+    setProjectsFinished(projectFinished)
+
   ),[data])
+
+
 
   function handleFilter(key: string) {
 
@@ -105,12 +127,12 @@ export default function Dashboard() {
             >
               <Text fontSize="x-small" fontWeight="bold" color="gray.400">Filtro por Status</Text>
               <HStack mt="2" justify="flex-start">
-                <Tag fontSize="small" fontWeight="bold" cursor="pointer" onClick={()=> handleFilter('Todos')}>Todos</Tag>
-                <Tag  colorScheme={'green'} cursor="pointer" onClick={()=> handleFilter('No prazo')}>No prazo</Tag>
-                <Tag  colorScheme={'red'} cursor="pointer" onClick={()=> handleFilter('Atrasado')}>Atrasado</Tag>
-                <Tag fontSize="small" fontWeight="bold" cursor="pointer" onClick={()=> handleFilter('Não iniciado')}>Não iniciado</Tag>
-                <Tag fontSize="small" fontWeight="bold" cursor="pointer" onClick={()=> handleFilter('Em andamento')}>Em andamento</Tag>
-                <Tag fontSize="small" fontWeight="bold" cursor="pointer" onClick={()=> handleFilter('Concluido')}>Concluido</Tag>
+              <Tag fontSize="small" fontWeight="bold" cursor="pointer" onClick={()=> handleFilter('Todos')}>Todos ({allProjects})</Tag>
+                <Tag  colorScheme={'green'} cursor="pointer" onClick={()=> handleFilter('No prazo')}>No prazo ({projectsOnTime})</Tag>
+                <Tag  colorScheme={'red'} cursor="pointer" onClick={()=> handleFilter('Atrasado')}>Atrasado ({projectsWithDelay})</Tag>
+                <Tag fontSize="small" fontWeight="bold" cursor="pointer" onClick={()=> handleFilter('Não iniciado')}>Não iniciado ({projectsNotStarted})</Tag>
+                <Tag fontSize="small" fontWeight="bold" cursor="pointer" onClick={()=> handleFilter('Em andamento')}>Em andamento ({projectsOnGoing})</Tag>
+                <Tag fontSize="small" fontWeight="bold" cursor="pointer" onClick={()=> handleFilter('Concluido')}>Concluido ({projectsFinished})</Tag>
               </HStack>
             </Box>
         <SimpleGrid mb="4"  gap="4" minChildWidth="256px" align="flex-start">

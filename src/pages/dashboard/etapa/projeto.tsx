@@ -10,23 +10,25 @@ import { withSSRAuth } from '../../../utils/withSSRAuth';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
-type Etapa = {
-  etapa: string,
-  startDate: string,
-  finishDate: string,
+type DataQuery = {
+  id: string
+  title: string
+  startDate: Date,
+  finishDate: Date,
   avancoPrevisto: number,
   avancoReal: number
 }
 
 
-type ProjectProps = {
+type ResponseProps = {
     id:string,
     title: string,
-    startDate: Date,
-    finishDate: Date,
-    avancoPrevisto: number,
-    avancoReal: number,
-    etapas: Etapa[]
+    etapa: {
+      startDate: string,
+      finishDate: string,
+      avancoPrevisto: number,
+      avancoReal: number
+    }
 
 }
 
@@ -40,7 +42,7 @@ export default function Dashboard() {
   }
 
   
-  const { data, isLoading, error} = useQuery<ProjectProps[]>('projects', async () => {
+  const { data, isLoading, error} = useQuery<DataQuery[]>('projects', async () => {
     const response = await api.get(`/projects/etapa/${path.etapa}`)
 
    
@@ -48,17 +50,16 @@ export default function Dashboard() {
       return {
         id: project.id,
         title: project.title,
-        etapa: project.etapa[0].etapa,
-        startDate: project.etapa[0].startDate,
-        finishDate: project.etapa[0].finishDate,
-        avancoPrevisto: project.etapa[0].avancoPrevisto,
-        avancoReal: project.etapa[0].avancoReal,
+        startDate: format(parseISO(project.etapa.startDate), 'dd/MM/yyyy'),
+        finishDate: format(parseISO(project.etapa.finishDate), 'dd/MM/yyyy'),
+        avancoPrevisto: project.etapa.avancoPrevisto,
+        avancoReal: project.etapa.avancoReal,
       };
     })
     return projects.sort((a,b) => (a.title > b.title) ? 1 : -1);
   })
 
-  const [projectsList, setProjectsList] = useState<ProjectProps[]>([])
+  const [projectsList, setProjectsList] = useState<DataQuery[]>([])
   const [allProjects, setAllProjects] = useState(0)
   const [projectsOnTime, setProjectsOnTime] = useState(0)
   const [projectsWithDelay, setProjectsWithDelay] = useState(0)
