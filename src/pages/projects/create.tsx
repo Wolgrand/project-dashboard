@@ -1,13 +1,18 @@
-import {Flex, Checkbox, Box, Center, Heading,Stack, Divider, Table, Thead, Tbody, Tr, Td, Th, VStack, SimpleGrid, HStack, Button, Text} from '@chakra-ui/react'
+import {Flex, Checkbox, Box, Center, Heading,Stack, Divider, Table, Thead, Tbody, Tr, Td, Th, VStack, SimpleGrid, HStack, Button, Text, useToast, Icon, Spinner} from '@chakra-ui/react'
 import Link from 'next/link'
+import router from 'next/router';
 import { FormEvent, useState } from 'react';
+import { RiPencilLine } from 'react-icons/ri';
 import { Input } from '../../components/Form/Input';
 import {Header} from '../../components/Header'
 import { Sidebar } from '../../components/Sidebar';
 import { api } from '../../services/apiClient';
+import { parseDate } from '../../utils/formatDate';
 import { withSSRAuth } from '../../utils/withSSRAuth';
 
 export default function CreateProject(){
+  const toast = useToast()
+  const [isLoading, setIsLoading] = useState(false)
   const [projectTitle, setProjectTitle] = useState("")
   const [projectStartDate, setProjectStartDate] = useState("")
   const [projectFinishDate, setProjectFinishDate] = useState("")
@@ -30,8 +35,12 @@ export default function CreateProject(){
   const [execucaoFinishDate, setExecucaoFinishDate] = useState("")
   const [execucaoApplicable, setExecucaoApplicable] = useState(true)
 
+
+
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
+
+
     const project = {
       title: projectTitle,
       startDate: projectStartDate,
@@ -52,7 +61,19 @@ export default function CreateProject(){
     
 
     try {
-      await api.post('/projects/new', project)
+      setIsLoading(true)
+      await api.post('/projects/new', project).then(response => toast({
+        title: "Projeto criado com sucesso",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      }) ).catch(error => toast({
+        title: "Erro ao criar novo projeto.",
+        description: "Tente novamente mais tarde.",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      })).then(()=>setIsLoading(false)).finally(()=>router.push('/projects'))
     } catch (err) {
       console.log(err)
     } 
@@ -167,7 +188,7 @@ export default function CreateProject(){
               <Link  href="/projects" passHref>
                 <Button as="a" colorScheme="whiteAlpha">Cancelar</Button>
               </Link>
-              <Button type="submit" colorScheme="pink">Salvar</Button>
+              <Button type="submit" colorScheme="pink">{!isLoading ? "Salvar" : <Spinner size="xs" />}</Button>
             </HStack>
           </Flex>
           </Stack>

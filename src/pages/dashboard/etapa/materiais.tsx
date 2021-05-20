@@ -9,6 +9,7 @@ import { api } from '../../../services/apiClient';
 import { withSSRAuth } from '../../../utils/withSSRAuth';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { parseDate } from '../../../utils/formatDate';
 
 type DataQuery = {
   id: string
@@ -50,8 +51,8 @@ export default function Dashboard() {
       return {
         id: project.id,
         title: project.title,
-        startDate: format(parseISO(project.etapa[0].startDate), 'dd/MM/yyyy'),
-        finishDate: format(parseISO(project.etapa[0].finishDate), 'dd/MM/yyyy'),
+        startDate: parseDate(project.etapa[0].startDate),
+        finishDate: parseDate(project.etapa[0].finishDate),
         avancoPrevisto: project.etapa[0].avancoPrevisto,
         avancoReal: project.etapa[0].avancoReal,
       };

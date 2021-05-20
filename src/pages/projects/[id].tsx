@@ -3,14 +3,14 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { RiAddLine, RiPencilLine } from 'react-icons/ri';
 import { useQuery } from 'react-query';
-import {Header} from '../../../components/Header'
-import { Pagination } from '../../../components/Pagination';
-import { Sidebar } from '../../../components/Sidebar';
-import { api } from '../../../services/apiClient';
-import { withSSRAuth } from '../../../utils/withSSRAuth';
+import {Header} from '../../components/Header'
+import { Pagination } from '../../components/Pagination';
+import { Sidebar } from '../../components/Sidebar';
+import { api } from '../../services/apiClient';
+import { withSSRAuth } from '../../utils/withSSRAuth';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { parseDate } from '../../../utils/formatDate';
+import { parseDate } from '../../utils/formatDate';
 
 type Etapa = {
   etapa: string,

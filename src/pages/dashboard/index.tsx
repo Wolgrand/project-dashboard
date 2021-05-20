@@ -8,6 +8,7 @@ import { Sidebar } from '../../components/Sidebar'
 import { api } from '../../services/apiClient';
 import { withSSRAuth } from '../../utils/withSSRAuth';
 import { useState, useEffect } from 'react';
+import { parseDate } from '../../utils/formatDate';
 
 type Etapa = {
   etapa: string,
@@ -34,11 +35,12 @@ export default function Dashboard() {
     const response = await api.get('/projects')
     
     const projects = response.data.map(item => {
+      
       return {
         id: item['ref']['@ref'].id,
         title: item.data.title,
-        startDate:  format(parseISO(item.data.startDate), 'dd/MM/yyyy'),
-        finishDate: format(parseISO(item.data.finishDate), 'dd/MM/yyyy'),
+        startDate: parseDate(item.data.startDate),
+        finishDate: parseDate(item.data.finishDate),
         avancoPrevisto: item.data.avancoPrevisto,
         avancoReal: item.data.avancoReal,
       };

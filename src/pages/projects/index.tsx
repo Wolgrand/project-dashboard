@@ -1,4 +1,4 @@
-import {Flex, Heading, Icon, Table, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue} from '@chakra-ui/react'
+import {Flex, Heading, Icon, Table, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue, Center} from '@chakra-ui/react'
 import { format, parseISO } from 'date-fns';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -8,6 +8,7 @@ import {Header} from '../../components/Header'
 import { Pagination } from '../../components/Pagination';
 import { Sidebar } from '../../components/Sidebar';
 import { api } from '../../services/apiClient';
+import { parseDate } from '../../utils/formatDate';
 import { withSSRAuth } from '../../utils/withSSRAuth';
 
 type Etapa = {
@@ -30,7 +31,7 @@ type ProjectProps = {
 
 }
 
-export default function UserList(){
+export default function Project(){
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
@@ -44,8 +45,8 @@ export default function UserList(){
         id: project['ref']['@ref'].id,
         updatedAt: format(new Date(project.ts / 1000), 'dd/MM/yyyy'),
         title: project.data.title,
-        startDate:  format(parseISO(project.data.startDate), 'dd/MM/yyyy'),
-        finishDate: format(parseISO(project.data.finishDate), 'dd/MM/yyyy'),
+        startDate: parseDate(project.data.startDate),
+        finishDate: parseDate(project.data.finishDate),
         avancoPrevisto: project.data.avancoPrevisto,
         avancoReal: project.data.avancoReal,
       };
@@ -97,14 +98,14 @@ export default function UserList(){
               </Tr>
             </Thead>
             <Tbody>
-              {data?.map(item =>(
+              {data && data?.map(item =>(
                 <Tr key={item.id}>
                 <Td>
                   <Box>
                     <Text fontWeight="bold" >{item.title}</Text>
                   </Box>
                 </Td>
-                <Td>{item.startDate}</Td>
+                <Td >{item.startDate}</Td>
                 <Td>{item.finishDate}</Td>
                 <Td>{item.updatedAt}</Td>
                 <Td>
@@ -124,7 +125,6 @@ export default function UserList(){
               ))}
             </Tbody>
           </Table>
-          <Pagination />
         </Box>
       </Flex>
     </Box>
