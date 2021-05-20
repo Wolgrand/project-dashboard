@@ -13,8 +13,8 @@ export default function Profile({showProfileData = true}:ProfileProps) {
     <Flex align="center">
       { showProfileData && (
         <Box mr="4" textAlign="right">
-          <Text>{user.name}</Text>
-          <Text color="gray.300" fontSize="small">{user.email}</Text>
+          <Text>{user?.name}</Text>
+          <Text color="gray.300" fontSize="small">{user?.email}</Text>
         </Box>
       )}
 
