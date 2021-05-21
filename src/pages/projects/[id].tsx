@@ -1,7 +1,7 @@
 import {Flex, Heading, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Icon, NumberInput, Table, Input, HStack, Tag, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue, useToast, Spinner} from '@chakra-ui/react'
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { RiAddLine, RiPencilLine } from 'react-icons/ri';
+import { RiAddLine, RiCheckboxBlankCircleFill, RiPencilLine } from 'react-icons/ri';
 import { useQuery } from 'react-query';
 import {Header} from '../../components/Header'
 import { Pagination } from '../../components/Pagination';
@@ -28,6 +28,8 @@ type ProjectProps = {
     finishDate: string,
     avancoPrevisto: number,
     avancoReal: number,
+    updatedAt: string,
+    updatedBy: string,
     etapas: Etapa[],
 
 }
@@ -47,6 +49,8 @@ export default function ProjectEdit(){
 
     const project:ProjectProps = {
       id: `${id}`,
+      updatedBy: response.data.updatedBy,
+      updatedAt: response.data.updateAt,
       title: response.data.title,
       startDate: response.data.startDate,
       finishDate: response.data.finishDate,
@@ -119,8 +123,11 @@ export default function ProjectEdit(){
             justify="space-between"
             align="center"
           >
-            <Heading size="lg" fontWeight="normal">Editar Projeto</Heading>
-           
+            <Heading size="md" fontWeight="normal">Detalhe do Projeto</Heading>
+            <Flex flexDirection="column" textAlign="right">
+              <Text color="gray.500" fontSize="smaller">Última atualização: {project?.updatedAt}</Text>
+              <Text color="gray.500" fontSize="smaller">por {project?.updatedBy}</Text>
+            </Flex>
 
           </Flex>
           <Stack>
@@ -131,21 +138,21 @@ export default function ProjectEdit(){
             <HStack flex="1">
               <Stack>
                 <Text color="gray.300" fontSize="smaller">Data de Início</Text>
-                <Input name={`data-inicio-${project?.title}`} type="date"  defaultValue={project?.startDate} onChange={e => updateProjectField('startDate', e.target.value)}/>
+                <Input name={`data-inicio-${project?.title}`} type="date" disabled defaultValue={project?.startDate} onChange={e => updateProjectField('startDate', e.target.value)}/>
               </Stack>
               <Stack>
                 <Text color="gray.300" fontSize="smaller">Data de Conclusão</Text>
-                <Input name={`data-fim-${project?.title}`} type="date"  defaultValue={project?.finishDate} onChange={e => updateProjectField('finishDate', e.target.value)}/>
+                <Input name={`data-fim-${project?.title}`} type="date" disabled  defaultValue={project?.finishDate} onChange={e => updateProjectField('finishDate', e.target.value)}/>
               </Stack>
               <Stack>
                 <Text color="gray.300" fontSize="smaller">Av. Previsto</Text>
-                <NumberInput colorScheme="gray.500" errorBorderColor="red.500" name={`avanco-previsto-${project?.title}`} min={0} max={100}  value={project?.avancoPrevisto} onChange={(value)=>updateProjectField('avancoPrevisto', Number(value))} >
+                <NumberInput colorScheme="gray.500" errorBorderColor="red.500" disabled name={`avanco-previsto-${project?.title}`} min={0} max={100}  value={project?.avancoPrevisto} onChange={(value)=>updateProjectField('avancoPrevisto', Number(value))} >
                   <NumberInputField />
                 </NumberInput>
               </Stack>
               <Stack>
                 <Text color="gray.300" fontSize="smaller">Av. Real</Text>
-                <NumberInput border="gray.500" errorBorderColor="red.500" name={`avanco-previsto-${project?.title}`} min={0} max={100}  value={project?.avancoReal} onChange={(value)=>updateProjectField('avancoReal', Number(value))} >
+                <NumberInput border="gray.500" errorBorderColor="red.500" disabled name={`avanco-previsto-${project?.title}`} min={0} max={100}  value={project?.avancoReal} onChange={(value)=>updateProjectField('avancoReal', Number(value))} >
                   <NumberInputField />
                 </NumberInput>
               </Stack>
@@ -155,23 +162,27 @@ export default function ProjectEdit(){
           <Table mt="4" colorScheme="whiteAlpha">
             <Thead>
               <Tr>
+                <Th></Th>
                 <Th>Etapa</Th>
-                <Th>Data de Início</Th>
-                <Th>Data de Conclusão</Th>
-                <Th>Avanço Previsto</Th>
-                <Th>Avanço Real</Th>
+                <Th>Início</Th>
+                <Th>Conclusão</Th>
+                <Th>Av. Previsto</Th>
+                <Th>Av. Real</Th>
               </Tr>
             </Thead>
             <Tbody>
                {project?.etapas?.map((item, index) => (
                 <Tr key={item.etapa}>
                   <Td>
+                    <Icon as={RiCheckboxBlankCircleFill} color={item.avancoReal >= item.avancoPrevisto ? 'green.500' : 'red.500'} fontSize="16"/>
+                  </Td>
+                  <Td>
                     {item.etapa}
                   </Td>
-                  <Td><Input name={`data-inicio-${item}`} type="date"  defaultValue={item.startDate} onChange={e => updateEtapaField(index,'startDate', e.target.value)}/></Td>
-                  <Td><Input name={`data-conclusao-${item}`} type="date"  defaultValue={item.finishDate} onChange={e => updateEtapaField(index,'finishDate', e.target.value)}/></Td>
-                  <Td><Input name={`avanco-previsto-${item}`} type="number" min="0"  defaultValue={item.avancoPrevisto} onChange={e => updateEtapaField(index,'avancoPrevisto', Number(e.target.value))}/></Td>
-                  <Td><Input name={`avanco-real-${item}`} type="number" min="0"  defaultValue={item.avancoReal} onChange={e => updateEtapaField(index,'avancoReal', Number(e.target.value))}/></Td>
+                  <Td>{parseDate(item.startDate)}</Td>
+                  <Td>{parseDate(item.finishDate)}</Td>
+                  <Td>{item.avancoPrevisto}</Td>
+                  <Td>{item.avancoReal}</Td>
               </Tr>
               ))} 
               
@@ -179,14 +190,15 @@ export default function ProjectEdit(){
             </Tbody>
 
           </Table>
-          <Flex mt="8" justify="flex-end">
-            <HStack spacing="4">
-              <Link  href="/projects" passHref>
-                <Button as="a" colorScheme="whiteAlpha">Cancelar</Button>
-              </Link>
-              <Button colorScheme="pink" onClick={()=>handleSaveChangesToProject()}>{!loading ? "Atualizar" : <Spinner size="xs" />}</Button>
-            </HStack>
-          </Flex>
+          <Text my="4" color="gray.300" fontSize="smaller">Status do projeto</Text>
+          <Box
+            
+            borderRadius={8}
+            bg="gray.800"
+            
+          >
+            <Text p="4" w="4xl" rounded="md" bg="gray.900" fontSize="medium">Status do projetoxssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</Text>
+          </Box>
         </Box>
       </Flex>
     </Box>

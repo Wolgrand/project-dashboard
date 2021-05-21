@@ -1,10 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { query as q } from 'faunadb';
 import { fauna } from "../../../services/fauna";
+import { format } from "date-fns";
 
 
 type ProjectResponse = {
-  data: ProjectRes[]
+  data: ProjectRes[],
+  ts: number
 }
 type ProjectRes = {
     ref: {
@@ -35,6 +37,8 @@ type ProjectReq = {
     finishDate: Date,
     avancoPrevisto: string,
     avancoReal: string,
+    status: string,
+    updatedBy: string,
     etapas: Etapa[]      
 }
 
@@ -52,6 +56,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<ProjectResponse[
       // ok
 
       const response = project.data
+      response['updateAt'] = format(new Date(project.ts / 1000), 'dd/MM/yyyy')
       
       // ok
       res.status(200).json(response);
@@ -61,7 +66,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<ProjectResponse[
     }
   }else if(req.method === 'POST'){
     const { id } = req.query;
-    const {title, startDate, finishDate, etapas, avancoPrevisto, avancoReal}:ProjectReq = req.body;
+    const {title, startDate, finishDate, etapas, avancoPrevisto, avancoReal, status, updatedBy}:ProjectReq = req.body;
     
     try {
       const updatedProject = await fauna.query(
@@ -70,6 +75,8 @@ export default async (req: NextApiRequest, res: NextApiResponse<ProjectResponse[
             title,
             startDate,
             finishDate,
+            status,
+            updatedBy,
             etapas,
             avancoPrevisto,
             avancoReal

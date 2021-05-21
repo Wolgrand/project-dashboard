@@ -1,4 +1,4 @@
-import {Flex, Heading, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Icon, NumberInput, Table, Input, HStack, Tag, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue, useToast, Spinner} from '@chakra-ui/react'
+import {Flex, Heading, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Icon, NumberInput, Table, Input, HStack, Tag, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue, useToast, Spinner, Textarea} from '@chakra-ui/react'
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { RiAddLine, RiPencilLine } from 'react-icons/ri';
@@ -9,8 +9,10 @@ import { Sidebar } from '../../../components/Sidebar';
 import { api } from '../../../services/apiClient';
 import { withSSRAuth } from '../../../utils/withSSRAuth';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { parseDate } from '../../../utils/formatDate';
+import { AuthContext } from '../../../contexts/AuthContext';
+import { format } from 'date-fns';
 
 type Etapa = {
   etapa: string,
@@ -28,6 +30,9 @@ type ProjectProps = {
     finishDate: string,
     avancoPrevisto: number,
     avancoReal: number,
+    status: string,
+    updatedAt: string,
+    updatedBy: string,
     etapas: Etapa[],
 
 }
@@ -40,6 +45,7 @@ export default function ProjectEdit(){
 
   const router = useRouter()
   const toast = useToast()
+  const { user } = useContext(AuthContext)
   const {id} = router.query
 
   const { data, isLoading, error} = useQuery<ProjectProps>('project', async () => {
@@ -52,7 +58,10 @@ export default function ProjectEdit(){
       finishDate: response.data.finishDate,
       avancoPrevisto: response.data.avancoPrevisto,
       avancoReal: response.data.avancoReal,
-      etapas: response.data.etapas
+      updatedBy: response.data.updatedBy,
+      updatedAt: response.data.updateAt,
+      etapas: response.data.etapas,
+      status: response.data.status
     }
     return project;
   })
@@ -66,17 +75,19 @@ export default function ProjectEdit(){
   ),[data])
 
   function updateEtapaField(index: number, field: string, value: any){
-    let updadetProject = {...project}
-    updadetProject.etapas[index][field] = value
-    console.log(updadetProject)
-    setProject(updadetProject)
+    let updatedProject = {...project}
+    updatedProject.etapas[index][field] = value
+    updatedProject.updatedBy = user.name
+    console.log(updatedProject)
+    setProject(updatedProject)
   }
 
   function updateProjectField(field: string, value: any){
-    let updadetProject = {...project}
-    updadetProject[field] = value
-    console.log(updadetProject)
-    setProject(updadetProject)
+    let updatedProject = {...project}
+    updatedProject[field] = value
+    updatedProject.updatedBy = user.name
+    console.log(updatedProject)
+    setProject(updatedProject)
   }
 
   async function handleSaveChangesToProject() {
@@ -120,7 +131,10 @@ export default function ProjectEdit(){
             align="center"
           >
             <Heading size="lg" fontWeight="normal">Editar Projeto</Heading>
-           
+            <Flex flexDirection="column" textAlign="right">
+              <Text color="gray.500" fontSize="smaller">Última atualização: {project?.updatedAt}</Text>
+              <Text color="gray.500" fontSize="smaller">por {project?.updatedBy}</Text>
+            </Flex>
 
           </Flex>
           <Stack>
@@ -179,6 +193,15 @@ export default function ProjectEdit(){
             </Tbody>
 
           </Table>
+          <Text my="4" color="gray.300" fontSize="smaller">Status do projeto</Text>
+          <Box
+            
+            borderRadius={8}
+            bg="gray.800"
+            
+          >
+            <Textarea display="inline-block" value={project?.status} placeholder="Descreva o status do projeto informando o status de cada etapa..." onChange={e => updateProjectField('status', e.target.value)}  />
+          </Box>
           <Flex mt="8" justify="flex-end">
             <HStack spacing="4">
               <Link  href="/projects" passHref>

@@ -26,6 +26,7 @@ type ProjectProps = {
     startDate: Date,
     finishDate: Date,
     updatedAt: Date,
+    updatedBy:string,
     avancoPrevisto: number,
     avancoReal: number,
 
@@ -45,6 +46,7 @@ export default function Project(){
         id: project['ref']['@ref'].id,
         updatedAt: format(new Date(project.ts / 1000), 'dd/MM/yyyy'),
         title: project.data.title,
+        updatedBy: project.data.updatedBy,
         startDate: parseDate(project.data.startDate),
         finishDate: parseDate(project.data.finishDate),
         avancoPrevisto: project.data.avancoPrevisto,
@@ -94,6 +96,7 @@ export default function Project(){
                 <Th>Data de Início</Th>
                 <Th>Data de Conclusão</Th>
                 <Th>Data de Atualização</Th>
+                <Th>Atualizado por</Th>
                 <Th w="8"></Th>
               </Tr>
             </Thead>
@@ -108,6 +111,7 @@ export default function Project(){
                 <Td >{item.startDate}</Td>
                 <Td>{item.finishDate}</Td>
                 <Td>{item.updatedAt}</Td>
+                <Td>{(item.updatedBy)?.split(' ')[0]}</Td>
                 <Td>
                   <Link href={`/projects/edit/${item.id}`} passHref>
                       <Button
