@@ -1,17 +1,19 @@
 import {Flex, Checkbox, Box, Center, Heading,Stack, Divider, Table, Thead, Tbody, Tr, Td, Th, VStack, SimpleGrid, HStack, Button, Text, useToast, Icon, Spinner} from '@chakra-ui/react'
 import Link from 'next/link'
 import router from 'next/router';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useContext, useState } from 'react';
 import { RiPencilLine } from 'react-icons/ri';
 import { Input } from '../../components/Form/Input';
 import {Header} from '../../components/Header'
 import { Sidebar } from '../../components/Sidebar';
+import { AuthContext } from '../../contexts/AuthContext';
 import { api } from '../../services/apiClient';
 import { parseDate } from '../../utils/formatDate';
 import { withSSRAuth } from '../../utils/withSSRAuth';
 
 export default function CreateProject(){
   const toast = useToast()
+  const { user } = useContext(AuthContext)
   const [isLoading, setIsLoading] = useState(false)
   const [projectTitle, setProjectTitle] = useState("")
   const [projectStartDate, setProjectStartDate] = useState("")
@@ -47,6 +49,7 @@ export default function CreateProject(){
       finishDate: projectFinishDate,
       avancoPrevisto: 0,
       avancoReal: 0,
+      updatedBy: user?.name,
       etapas:[]
     }
 
