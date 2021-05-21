@@ -148,10 +148,15 @@ export default function Dashboard() {
                 p={["6"]}
                 bg="gray.800"
                 borderRadius={8}
+                transition="all"
                 pb="4"
                 key={Math.random().toString(36).substring(7)}
+                _hover={{
+                  transition: 'transform .3s ease-out',
+                  transform: 'translate(0, -5px)'
+                }}
               >
-                <HStack mb="2" justify="space-between">
+                <HStack mb="2" justify="left">
                   <Tag  colorScheme={item?.avancoPrevisto>item.avancoReal ? "red" : "green"}>{item?.avancoPrevisto>item.avancoReal ? "Atrasado" : "No prazo"}</Tag>
                   <Tag fontSize="small" fontWeight="bold">{item.avancoReal === 0 ? "Não iniciado" : item.avancoReal< 100 ? "Em andamento" : "Concluído"}</Tag>
                 </HStack>

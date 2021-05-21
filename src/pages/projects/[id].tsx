@@ -1,7 +1,7 @@
 import {Flex, Heading, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Icon, NumberInput, Table, Input, HStack, Tag, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue, useToast, Spinner} from '@chakra-ui/react'
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { RiAddLine, RiCheckboxBlankCircleFill, RiPencilLine } from 'react-icons/ri';
+import { RiAddLine, RiArrowLeftRightFill, RiCheckboxBlankCircleFill, RiPencilLine } from 'react-icons/ri';
 import { useQuery } from 'react-query';
 import {Header} from '../../components/Header'
 import { Pagination } from '../../components/Pagination';
@@ -10,7 +10,16 @@ import { api } from '../../services/apiClient';
 import { withSSRAuth } from '../../utils/withSSRAuth';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import {differenceInCalendarMonths, eachMonthOfInterval, parseISO} from 'date-fns'
 import { parseDate } from '../../utils/formatDate';
+
+
+const  Chart = dynamic(() => import('react-apexcharts'), {
+  ssr:false,
+})
+
+
+
 
 type Etapa = {
   etapa: string,
@@ -23,6 +32,7 @@ type Etapa = {
 
 type ProjectProps = {
     id:string,
+    status: string,
     title: string,
     startDate: string,
     finishDate: string,
@@ -35,6 +45,8 @@ type ProjectProps = {
 }
 
 export default function ProjectEdit(){
+
+  
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
@@ -51,6 +63,7 @@ export default function ProjectEdit(){
       id: `${id}`,
       updatedBy: response.data.updatedBy,
       updatedAt: response.data.updateAt,
+      status: response.data.status,
       title: response.data.title,
       startDate: response.data.startDate,
       finishDate: response.data.finishDate,
@@ -63,11 +76,100 @@ export default function ProjectEdit(){
 
   const [project, setProject] = useState<ProjectProps>()
   const [loading, setLoading] = useState(false)
-
+  const [showTimeline, setShowTimeLine] = useState(false)
 
   useEffect(()=>(
     setProject(data)
   ),[data])
+
+  function createCategories(startDate:string, finishDate: string): Date[] {
+    const categorias= []
+    const diferenca = eachMonthOfInterval({
+      start: new Date(Number(startDate?.split('-')[0]), Number(startDate?.split('-')[1]), Number(startDate?.split('-')[2])),
+      end: new Date(Number(finishDate?.split('-')[0]), Number(finishDate?.split('-')[1]), Number(finishDate?.split('-')[2]))
+    })
+
+    diferenca.map(item => categorias.push(item))
+    return categorias
+
+  }
+
+
+  const options = {
+    chart: {
+      type: 'rangeBar',
+      toolbar: {
+        show: false,
+      },
+      zoom: {
+        enabled: false,
+      },
+      foreColor: theme.colors.gray[500],
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true,
+        distributed: true,
+        dataLabels: {
+          hideOverflowingLabels: false
+        }
+      }
+    },
+    grid: {
+      show: false,
+    },
+    dataLabels: {
+      enabled: true,
+      formatter: function(val, opts) {
+        var label = opts.w.globals.labels[opts.dataPointIndex]
+        return label
+      },
+      style: {
+        colors: ['#f3f4f5', '#fff']
+      }
+    },
+    tooltip: {
+      enabled: false
+    },
+    xaxis: {
+      type: 'datetime',
+    },
+    yaxis: {
+      show: false,
+      categories:[]
+    },
+    markers: {
+      colors: ['#F44336', '#E91E63', '#9C27B0']
+   },
+    
+  };
+  
+
+  function createChartData(etapas: Etapa[]) {
+    const color = ['#008FFB', '#00E396', '#775DD0', '#FEB019', '#FF4560' , '#e67e22', '#bdc3c7' ]
+    const data = []
+    etapas?.map((item, index) =>
+      data.push({
+        x: item.etapa,
+        y: [
+          new Date(item.startDate).getTime(),
+          new Date(item.finishDate).getTime(),
+        ],
+        fillColor: item.avancoReal === 0 && item.avancoPrevisto === 0 ?  '#bdc3c7' : item.avancoReal < item.avancoPrevisto ? '#FF4560' : '#00E396'
+      })
+    )
+    const series = [{
+      data: data
+    }]
+
+    return series
+    
+  }
+
+
+
+  
+
 
   function updateEtapaField(index: number, field: string, value: any){
     let updadetProject = {...project}
@@ -158,8 +260,9 @@ export default function ProjectEdit(){
               </Stack>
             </HStack>
           </Stack>
-            
-          <Table mt="4" colorScheme="whiteAlpha">
+
+                      
+            <Table mt="4" colorScheme="whiteAlpha">
             <Thead>
               <Tr>
                 <Th></Th>
@@ -190,6 +293,8 @@ export default function ProjectEdit(){
             </Tbody>
 
           </Table>
+
+        <Chart options={options} series={createChartData(project?.etapas)}type="rangeBar" height={350}/>
           <Text my="4" color="gray.300" fontSize="smaller">Status do projeto</Text>
           <Box
             
@@ -197,7 +302,7 @@ export default function ProjectEdit(){
             bg="gray.800"
             
           >
-            <Text p="4" w="4xl" rounded="md" bg="gray.900" fontSize="medium">Status do projetoxssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</Text>
+            <Text p="4" w="4xl" rounded="md" bg="gray.900" fontSize="medium">{project?.status}</Text>
           </Box>
         </Box>
       </Flex>

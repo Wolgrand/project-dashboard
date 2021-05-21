@@ -1,4 +1,4 @@
-import {Flex, Button,Box,Text, Stack, SimpleGrid, theme, Tag, HStack, StatHelpText, Progress} from '@chakra-ui/react'
+import {Flex, Button,Box,Text, Stack, SimpleGrid, theme, Tag, HStack, StatHelpText, Progress, LinkBox, LinkOverlay} from '@chakra-ui/react'
 import dynamic from 'next/dynamic';
 import { format, compareAsc, parseISO } from 'date-fns'
 import { useQuery } from 'react-query';
@@ -15,6 +15,7 @@ type DataQuery = {
   id: string
   title: string
   startDate: Date,
+  updatedAt: string,
   finishDate: Date,
   avancoPrevisto: number,
   avancoReal: number
@@ -24,6 +25,7 @@ type DataQuery = {
 type ResponseProps = {
     id:string,
     title: string,
+    updatedAt: string,
     etapa: {
       startDate: string,
       finishDate: string,
@@ -53,6 +55,7 @@ export default function Dashboard() {
         title: project.title,
         startDate: parseDate(project.etapa[0].startDate),
         finishDate: parseDate(project.etapa[0].finishDate),
+        updatedAt: project.updatedAt,
         avancoPrevisto: project.etapa[0].avancoPrevisto,
         avancoReal: project.etapa[0].avancoReal,
       };
@@ -153,42 +156,51 @@ export default function Dashboard() {
             <Text>Nenhum projeto encontrado.</Text>
 
             : projectsList?.map(item=>(
-            <Box
-              p={["6"]}
-              bg="gray.800"
-              borderRadius={8}
-              pb="4"
-              key={Math.random().toString(36).substring(7)}
-            >
-              <HStack mb="2" justify="space-between">
-                <Tag  colorScheme={item?.avancoPrevisto>item.avancoReal ? "red" : "green"}>{item?.avancoPrevisto>item.avancoReal ? "Atrasado" : "No prazo"}</Tag>
-                <Tag fontSize="small" fontWeight="bold">{item.avancoReal === 0 ? "Não iniciado" : item.avancoReal< 100 ? "Em andamento" : "Concluído"}</Tag>
-              </HStack>
-              <Stack spacing="0" mb="2">
-                <Text fontSize="x-small" fontWeight="bold" color="gray.400">Nome do Projeto</Text>
-                <Text fontSize="small">{item.title}</Text>
-              </Stack>
-              <HStack justifyContent="space-between" mb="2">
-                <Stack spacing="0">
-                  <Text fontSize="x-small" fontWeight="bold" color="gray.400">Prev. de Início</Text>
-                  <Text fontSize="medium">{item.startDate}</Text>
-                </Stack>
-                <Stack spacing="0">
-                  <Text fontSize="x-small" fontWeight="bold" color="gray.400">Prev. de Conclusão</Text>
-                  <Text fontSize="medium">{item.finishDate}</Text>
-                </Stack>
-              </HStack>
-              <HStack justifyContent="space-between">
-                <Stack spacing="0">
-                  <Text fontSize="x-small" fontWeight="bold" color="gray.400">Avanço Previsto</Text>
-                  <Text fontSize="medium">{item.avancoPrevisto}%</Text>
-                </Stack>
-                <Stack spacing="0">
-                  <Text fontSize="x-small" fontWeight="bold" color="gray.400">Avanço Real</Text>
-                  <Text fontSize="medium">{item.avancoReal}%</Text>
-                </Stack>
-              </HStack>
-            </Box>
+              <LinkBox>
+                <Box
+                  p={["6"]}
+                  bg="gray.800"
+                  borderRadius={8}
+                  transition="all"
+                  pb="4"
+                  key={Math.random().toString(36).substring(7)}
+                  _hover={{
+                    transition: 'transform .3s ease-out',
+                    transform: 'translate(0, -5px)'
+                  }}
+                >
+                  <HStack mb="2" justify="left">
+                    <Tag  colorScheme={item?.avancoPrevisto>item.avancoReal ? "red" : "green"}>{item?.avancoPrevisto>item.avancoReal ? "Atrasado" : "No prazo"}</Tag>
+                    <Tag fontSize="small" fontWeight="bold">{item.avancoReal === 0 ? "Não iniciado" : item.avancoReal< 100 ? "Em andamento" : "Concluído"}</Tag>
+                  </HStack>
+                  <LinkOverlay href={`/projects/${item.id}`}>
+                    <Stack spacing="0" mb="2">
+                      <Text fontSize="x-small" fontWeight="bold" color="gray.400">Nome do Projeto</Text>
+                      <Text fontSize="small">{item.title}</Text>
+                    </Stack>
+                  </LinkOverlay>
+                  <HStack justifyContent="space-between" mb="2">
+                    <Stack spacing="0">
+                      <Text fontSize="x-small" fontWeight="bold" color="gray.400">Prev. de Início</Text>
+                      <Text fontSize="medium">{item.startDate}</Text>
+                    </Stack>
+                    <Stack spacing="0">
+                      <Text fontSize="x-small" fontWeight="bold" color="gray.400">Prev. de Conclusão</Text>
+                      <Text fontSize="medium">{item.finishDate}</Text>
+                    </Stack>
+                  </HStack>
+                  <HStack justifyContent="space-between">
+                    <Stack spacing="0">
+                      <Text fontSize="x-small" fontWeight="bold" color="gray.400">Avanço Previsto</Text>
+                      <Text fontSize="medium">{item.avancoPrevisto}%</Text>
+                    </Stack>
+                    <Stack spacing="0">
+                      <Text fontSize="x-small" fontWeight="bold" color="gray.400">Avanço Real</Text>
+                      <Text fontSize="medium">{item.avancoReal}%</Text>
+                    </Stack>
+                  </HStack>
+                </Box>
+              </LinkBox>
 
           ))}
           
