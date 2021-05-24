@@ -1,4 +1,4 @@
-import {Flex, Heading, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Icon, NumberInput, Table, Input, HStack, Tag, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue, useToast, Spinner, Textarea} from '@chakra-ui/react'
+import {Flex, Heading, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Icon, NumberInput, Table, Input, HStack, Tag, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue, useToast, Spinner, Textarea, VStack} from '@chakra-ui/react'
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { RiAddLine, RiPencilLine } from 'react-icons/ri';
@@ -10,7 +10,7 @@ import { api } from '../../../services/apiClient';
 import { withSSRAuth } from '../../../utils/withSSRAuth';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
-import { parseDate } from '../../../utils/formatDate';
+import { getAvancoPrevisto, parseDate } from '../../../utils/formatDate';
 import { AuthContext } from '../../../contexts/AuthContext';
 import { format } from 'date-fns';
 
@@ -26,6 +26,7 @@ type Etapa = {
 type ProjectProps = {
     id:string,
     title: string,
+    statusDate: string,
     startDate: string,
     finishDate: string,
     avancoPrevisto: number,
@@ -56,6 +57,7 @@ export default function ProjectEdit(){
       title: response.data.title,
       startDate: response.data.startDate,
       finishDate: response.data.finishDate,
+      statusDate:response.data.statusDate, 
       avancoPrevisto: response.data.avancoPrevisto,
       avancoReal: response.data.avancoReal,
       updatedBy: response.data.updatedBy,
@@ -138,10 +140,16 @@ export default function ProjectEdit(){
 
           </Flex>
           <Stack>
+            <HStack justifyContent="space-between">
+              <Stack>
+                <Text color="gray.300" fontSize="smaller">Nome do projeto</Text>
+                <Text>{project?.title}</Text>
+              </Stack>
             <Stack>
-              <Text color="gray.300" fontSize="smaller">Nome do projeto</Text>
-              <Text>{project?.title}</Text>
-            </Stack>
+                <Text color="gray.300" fontSize="smaller">Data de Status</Text>
+                <Input name={`data-status-${project?.title}`} type="date"  defaultValue={project?.statusDate} onChange={e => updateProjectField('statusDate', e.target.value)}/>
+              </Stack>
+            </HStack>
             <HStack flex="1">
               <Stack>
                 <Text color="gray.300" fontSize="smaller">Data de Início</Text>
@@ -153,7 +161,7 @@ export default function ProjectEdit(){
               </Stack>
               <Stack>
                 <Text color="gray.300" fontSize="smaller">Av. Previsto</Text>
-                <NumberInput colorScheme="gray.500" errorBorderColor="red.500" name={`avanco-previsto-${project?.title}`} min={0} max={100}  value={project?.avancoPrevisto} onChange={(value)=>updateProjectField('avancoPrevisto', Number(value))} >
+                <NumberInput colorScheme="gray.500" isDisabled errorBorderColor="red.500" name={`avanco-previsto-${project?.title}`} min={0} max={100}  value={getAvancoPrevisto(project?.startDate, project?.finishDate, project?.statusDate)} >
                   <NumberInputField />
                 </NumberInput>
               </Stack>
@@ -184,7 +192,7 @@ export default function ProjectEdit(){
                   </Td>
                   <Td><Input name={`data-inicio-${item}`} type="date"  defaultValue={item.startDate} onChange={e => updateEtapaField(index,'startDate', e.target.value)}/></Td>
                   <Td><Input name={`data-conclusao-${item}`} type="date"  defaultValue={item.finishDate} onChange={e => updateEtapaField(index,'finishDate', e.target.value)}/></Td>
-                  <Td><Input name={`avanco-previsto-${item}`} type="number" min="0"  defaultValue={item.avancoPrevisto} onChange={e => updateEtapaField(index,'avancoPrevisto', Number(e.target.value))}/></Td>
+                  <Td><Text>{getAvancoPrevisto(item.startDate, item.finishDate, project.statusDate)}</Text></Td>
                   <Td><Input name={`avanco-real-${item}`} type="number" min="0"  defaultValue={item.avancoReal} onChange={e => updateEtapaField(index,'avancoReal', Number(e.target.value))}/></Td>
               </Tr>
               ))} 
