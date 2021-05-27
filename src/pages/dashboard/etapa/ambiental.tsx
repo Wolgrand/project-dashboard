@@ -9,11 +9,11 @@ import { api } from '../../../services/apiClient';
 import { withSSRAuth } from '../../../utils/withSSRAuth';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { parseDate } from '../../../utils/formatDate';
+import { getAvancoPrevisto, parseDate } from '../../../utils/formatDate';
 
 type DataQuery = {
   id: string
-  title: string
+  title: string,
   startDate: Date,
   updatedAt: string,
   finishDate: Date,
@@ -151,7 +151,7 @@ export default function Dashboard() {
                 <Tag fontSize="small" fontWeight="bold" cursor="pointer" onClick={()=> handleFilter('Concluido')}>Concluido ({projectsFinished})</Tag>
               </HStack>
             </Box>
-        <SimpleGrid mb="4"  gap="4" minChildWidth="256px" align="flex-start">
+        <SimpleGrid mb="4"  gap="4" minChildWidth="324px" align="flex-start">
           {projectsList?.length === 0 ?
             <Text>Nenhum projeto encontrado.</Text>
 

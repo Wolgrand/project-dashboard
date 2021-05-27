@@ -151,7 +151,7 @@ export default function Dashboard() {
                 height="240px"
                 transition="all"
                 pb="4"
-                key={Math.random().toString(36).substring(7)}
+                key={item?.id}
                 _hover={{
                   transition: 'transform .3s ease-out',
                   transform: 'translate(0, -5px)'

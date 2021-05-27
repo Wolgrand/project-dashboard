@@ -151,7 +151,7 @@ export default function Dashboard() {
                 <Tag fontSize="small" fontWeight="bold" cursor="pointer" onClick={()=> handleFilter('Concluido')}>Concluido ({projectsFinished})</Tag>
               </HStack>
             </Box>
-        <SimpleGrid mb="4"  gap="4" minChildWidth="256px" align="flex-start">
+        <SimpleGrid mb="4"  gap="4" minChildWidth="324px" align="flex-start">
           {projectsList?.length === 0 ?
             <Text>Nenhum projeto encontrado.</Text>
 

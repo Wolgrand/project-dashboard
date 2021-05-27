@@ -76,6 +76,17 @@ export default function ProjectEdit(){
     setProject(data)
   ),[data])
 
+  function updateAvacoPrevistoProjetoeEtapa(statusDate: string) {
+    let updatedProject = {...project}
+    updatedProject['statusDate'] = statusDate
+    updatedProject.avancoPrevisto = Number(getAvancoPrevisto(project.startDate, project.finishDate, statusDate))
+    updatedProject.etapas.map((item, index)=>(
+      updatedProject.etapas[index]['avancoPrevisto'] = Number(getAvancoPrevisto(item.startDate, item.finishDate, statusDate))
+    ))
+    console.log(updatedProject)
+    setProject(updatedProject)
+  }
+
   function updateEtapaField(index: number, field: string, value: any){
     let updatedProject = {...project}
     updatedProject.etapas[index][field] = value
@@ -147,7 +158,7 @@ export default function ProjectEdit(){
               </Stack>
             <Stack>
                 <Text color="gray.300" fontSize="smaller">Data de Status</Text>
-                <Input name={`data-status-${project?.title}`} type="date"  defaultValue={project?.statusDate} onChange={e => updateProjectField('statusDate', e.target.value)}/>
+                <Input name={`data-status-${project?.title}`} type="date"  defaultValue={project?.statusDate} onChange={e => updateAvacoPrevistoProjetoeEtapa(e.target.value)}/>
               </Stack>
             </HStack>
             <HStack flex="1">
