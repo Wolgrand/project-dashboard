@@ -11,7 +11,7 @@ import { withSSRAuth } from '../../utils/withSSRAuth';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import {differenceInCalendarMonths, eachMonthOfInterval, parseISO} from 'date-fns'
-import { parseDate } from '../../utils/formatDate';
+import { getAvancoPrevisto, parseDate } from '../../utils/formatDate';
 
 
 const  Chart = dynamic(() => import('react-apexcharts'), {
@@ -34,6 +34,7 @@ type ProjectProps = {
     id:string,
     status: string,
     title: string,
+    statusDate: string,
     startDate: string,
     finishDate: string,
     avancoPrevisto: number,
@@ -65,6 +66,7 @@ export default function ProjectEdit(){
       updatedAt: response.data.updateAt,
       status: response.data.status,
       title: response.data.title,
+      statusDate: response.data.statusDate,
       startDate: response.data.startDate,
       finishDate: response.data.finishDate,
       avancoPrevisto: response.data.avancoPrevisto,
@@ -155,7 +157,7 @@ export default function ProjectEdit(){
           new Date(item.startDate).getTime(),
           new Date(item.finishDate).getTime(),
         ],
-        fillColor: item.avancoReal === 0 && item.avancoPrevisto === 0 ?  '#bdc3c7' : item.avancoReal < item.avancoPrevisto ? '#FF4560' : '#00E396'
+        fillColor: item.avancoReal === 0 && getAvancoPrevisto(item?.startDate, item?.finishDate, project?.statusDate)=== 0 ?  '#bdc3c7' : item.avancoReal < getAvancoPrevisto(item?.startDate, item?.finishDate, project?.statusDate)? '#FF4560' : '#00E396'
       })
     )
     const series = [{
@@ -248,7 +250,7 @@ export default function ProjectEdit(){
               </Stack>
               <Stack>
                 <Text color="gray.300" fontSize="smaller">Av. Previsto</Text>
-                <NumberInput colorScheme="gray.500" errorBorderColor="red.500" disabled name={`avanco-previsto-${project?.title}`} min={0} max={100}  value={project?.avancoPrevisto} onChange={(value)=>updateProjectField('avancoPrevisto', Number(value))} >
+                <NumberInput colorScheme="gray.500" errorBorderColor="red.500" disabled name={`avanco-previsto-${project?.title}`} min={0} max={100}  value={getAvancoPrevisto(project?.startDate, project?.finishDate, project?.statusDate)} onChange={(value)=>updateProjectField('avancoPrevisto', Number(value))} >
                   <NumberInputField />
                 </NumberInput>
               </Stack>
@@ -257,6 +259,10 @@ export default function ProjectEdit(){
                 <NumberInput border="gray.500" errorBorderColor="red.500" disabled name={`avanco-previsto-${project?.title}`} min={0} max={100}  value={project?.avancoReal} onChange={(value)=>updateProjectField('avancoReal', Number(value))} >
                   <NumberInputField />
                 </NumberInput>
+              </Stack>
+              <Stack>
+                <Text color="gray.300" fontSize="smaller">Data de Status</Text>
+                <Input name={`data-status-${project?.title}`} type="date" disabled  defaultValue={project?.statusDate}/>
               </Stack>
             </HStack>
           </Stack>
@@ -277,14 +283,14 @@ export default function ProjectEdit(){
                {project?.etapas?.map((item, index) => (
                 <Tr key={item.etapa}>
                   <Td>
-                    <Icon as={RiCheckboxBlankCircleFill} color={item.avancoReal >= item.avancoPrevisto ? 'green.500' : 'red.500'} fontSize="16"/>
+                    <Icon as={RiCheckboxBlankCircleFill} color={item.avancoReal >= getAvancoPrevisto(project?.startDate, project?.finishDate, project?.statusDate) ? 'green.500' : 'red.500'} fontSize="16"/>
                   </Td>
                   <Td>
                     {item.etapa}
                   </Td>
                   <Td>{parseDate(item.startDate)}</Td>
                   <Td>{parseDate(item.finishDate)}</Td>
-                  <Td>{item.avancoPrevisto}</Td>
+                  <Td>{getAvancoPrevisto(item.startDate, item.finishDate, project.statusDate)}</Td>
                   <Td>{item.avancoReal}</Td>
               </Tr>
               ))} 

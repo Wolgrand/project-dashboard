@@ -16,6 +16,6 @@ export function getAvancoPrevisto(startDate:any, finishDate:any, statusDate?: an
   const avancoPrevisto = ((daysToStatus/daysToFinish)*100).toLocaleString('pt-BR', { maximumFractionDigits: 0})
 
 
-  return Number(avancoPrevisto) >= 100 ? 100 : avancoPrevisto
+  return Number(avancoPrevisto) < 0 ? 0 : Number(avancoPrevisto)>= 100 ? 100 : avancoPrevisto
 }
 
