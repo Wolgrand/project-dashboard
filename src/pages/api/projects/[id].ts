@@ -40,6 +40,7 @@ type ProjectReq = {
     statusDate: Date,
     status: string,
     updatedBy: string,
+    updatedAt: Date,
     etapas: Etapa[]      
 }
 
@@ -67,7 +68,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<ProjectResponse[
     }
   }else if(req.method === 'POST'){
     const { id } = req.query;
-    const {title, startDate, finishDate, etapas, avancoPrevisto, avancoReal, status, updatedBy, statusDate}:ProjectReq = req.body;
+    const {title, startDate, finishDate, etapas, avancoPrevisto, avancoReal, status, updatedBy, statusDate, updatedAt}:ProjectReq = req.body;
     
     try {
       const updatedProject = await fauna.query(
@@ -79,6 +80,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<ProjectResponse[
             status,
             statusDate,
             updatedBy,
+            updatedAt,
             etapas,
             avancoPrevisto,
             avancoReal

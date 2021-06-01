@@ -32,7 +32,7 @@ type ProjectProps = {
     avancoPrevisto: number,
     avancoReal: number,
     status: string,
-    updatedAt: string,
+    updatedAt: Date,
     updatedBy: string,
     etapas: Etapa[],
 
@@ -91,6 +91,7 @@ export default function ProjectEdit(){
     let updatedProject = {...project}
     updatedProject.etapas[index][field] = value
     updatedProject.updatedBy = user.name
+    updatedProject.updatedAt = new Date()
     console.log(updatedProject)
     setProject(updatedProject)
   }
@@ -99,6 +100,7 @@ export default function ProjectEdit(){
     let updatedProject = {...project}
     updatedProject[field] = value
     updatedProject.updatedBy = user.name
+    updatedProject.updatedAt = new Date()
     console.log(updatedProject)
     setProject(updatedProject)
   }
@@ -107,6 +109,7 @@ export default function ProjectEdit(){
     try {
       setLoading(true)
       const data = project
+      await api.post(`/projects/datalog/${id}`, data)
       await api.post(`/projects/${id}`, data).then(response => toast({
         title: "Projeto atualizado com sucesso",
         status: "success",
@@ -145,8 +148,8 @@ export default function ProjectEdit(){
           >
             <Heading size="lg" fontWeight="normal">Editar Projeto</Heading>
             <Flex flexDirection="column" textAlign="right">
-              <Text color="gray.500" fontSize="smaller">Última atualização: {project?.updatedAt}</Text>
-              <Text color="gray.500" fontSize="smaller">por {project?.updatedBy}</Text>
+              <Text color="gray.500" fontSize="smaller">Última atualização: {data?.updatedAt}</Text>
+              <Text color="gray.500" fontSize="smaller">por {data?.updatedBy}</Text>
             </Flex>
 
           </Flex>
