@@ -58,7 +58,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<ProjectResponse[
       // ok
 
       const response = project.data
-      response['updateAt'] = format(new Date(project.ts / 1000), 'dd/MM/yyyy')
+      response['updatedAt'] = format(new Date(project.ts / 1000), 'dd/MM/yyyy')
       
       // ok
       res.status(200).json(response);

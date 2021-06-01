@@ -1,4 +1,4 @@
-import {Flex, Heading, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Icon, NumberInput, Table, Input, HStack, Tag, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue, useToast, Spinner} from '@chakra-ui/react'
+import {Flex, Heading, NumberInputField,  NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Icon, NumberInput, Table, Input, HStack, Tag, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue, useToast, Spinner, Tabs, TabList, Tab, TabPanels, TabPanel} from '@chakra-ui/react'
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { RiAddLine, RiArrowLeftRightFill, RiCheckboxBlankCircleFill, RiPencilLine } from 'react-icons/ri';
@@ -45,6 +45,19 @@ type ProjectProps = {
 
 }
 
+type history = {
+  id: string,
+  title: string,
+  status: string,
+  updatedAt: Date,
+  avancoPrevisto: number,
+  avancoReal: number,
+}
+
+type historyResponse = {
+  data: history[]
+}
+
 export default function ProjectEdit(){
 
   
@@ -63,7 +76,7 @@ export default function ProjectEdit(){
     const project:ProjectProps = {
       id: `${id}`,
       updatedBy: response.data.updatedBy,
-      updatedAt: response.data.updateAt,
+      updatedAt: response.data.updatedAt,
       status: response.data.status,
       title: response.data.title,
       statusDate: response.data.statusDate,
@@ -74,6 +87,13 @@ export default function ProjectEdit(){
       etapas: response.data.etapas
     }
     return project;
+  })
+
+  const history = useQuery<history[]>('history', async () => {
+    const response = await api.get(`/projects/datalog/${id}`)
+
+    
+    return response.data.sort((a,b) => (a.statusDate > b.statusDate) ? 1 : -1);
   })
 
   const [project, setProject] = useState<ProjectProps>()
@@ -167,10 +187,6 @@ export default function ProjectEdit(){
     return series
     
   }
-
-
-
-  
 
 
   function updateEtapaField(index: number, field: string, value: any){
@@ -267,40 +283,78 @@ export default function ProjectEdit(){
             </HStack>
           </Stack>
 
+          <Tabs mt="8" colorScheme="pink" variant="unstyled" _focus={{
+            borderColor: 'red',
+            border: '100px'
+    
+          }}>
+            <TabList>
+              <Tab _selected={{ color: "pink.500" }}>Entregas</Tab>
+              <Tab _selected={{ color: "pink.500" }}>Linha do Tempo</Tab>
+              <Tab _selected={{ color: "pink.500"}}>Histórico</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel>
+              <Table mt="4" colorScheme="whiteAlpha">
+                <Thead>
+                  <Tr>
+                    <Th></Th>
+                    <Th>Etapa</Th>
+                    <Th>Início</Th>
+                    <Th>Conclusão</Th>
+                    <Th>Av. Previsto</Th>
+                    <Th>Av. Real</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {project?.etapas?.map((item, index) => (
+                    <Tr key={item.etapa}>
+                      <Td>
+                        <Icon as={RiCheckboxBlankCircleFill} color={item.avancoReal >= getAvancoPrevisto(project?.startDate, project?.finishDate, project?.statusDate) ? 'green.500' : 'red.500'} fontSize="16"/>
+                      </Td>
+                      <Td>
+                        {item.etapa}
+                      </Td>
+                      <Td>{parseDate(item.startDate)}</Td>
+                      <Td>{parseDate(item.finishDate)}</Td>
+                      <Td>{getAvancoPrevisto(item.startDate, item.finishDate, project.statusDate)}</Td>
+                      <Td>{item.avancoReal}</Td>
+                  </Tr>
+                  ))} 
+                </Tbody>
+              </Table>
+              </TabPanel>
+              <TabPanel>
+                <Chart options={options} series={createChartData(project?.etapas)}type="rangeBar" height={350}/>
+              </TabPanel>
+              <TabPanel>
+              <Table mt="4" colorScheme="whiteAlpha">
+                <Thead>
+                  <Tr>
+                    <Th>Data</Th>
+                    <Th>Av. Previsto</Th>
+                    <Th>Av. Real</Th>
+                    <Th>Status</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {history?.data?.map((item, index) => (
+                    <Tr key={item.id}>
+                      <Td>{item.updatedAt}</Td>
+                      <Td>{item.avancoPrevisto}</Td>
+                      <Td>{item.avancoReal}</Td>
+                      <Td>{item.status}</Td>
+                  </Tr>
+                  ))} 
+                </Tbody>
+              </Table>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
                       
-            <Table mt="4" colorScheme="whiteAlpha">
-            <Thead>
-              <Tr>
-                <Th></Th>
-                <Th>Etapa</Th>
-                <Th>Início</Th>
-                <Th>Conclusão</Th>
-                <Th>Av. Previsto</Th>
-                <Th>Av. Real</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-               {project?.etapas?.map((item, index) => (
-                <Tr key={item.etapa}>
-                  <Td>
-                    <Icon as={RiCheckboxBlankCircleFill} color={item.avancoReal >= getAvancoPrevisto(project?.startDate, project?.finishDate, project?.statusDate) ? 'green.500' : 'red.500'} fontSize="16"/>
-                  </Td>
-                  <Td>
-                    {item.etapa}
-                  </Td>
-                  <Td>{parseDate(item.startDate)}</Td>
-                  <Td>{parseDate(item.finishDate)}</Td>
-                  <Td>{getAvancoPrevisto(item.startDate, item.finishDate, project.statusDate)}</Td>
-                  <Td>{item.avancoReal}</Td>
-              </Tr>
-              ))} 
-              
-                
-            </Tbody>
+            
 
-          </Table>
-
-        <Chart options={options} series={createChartData(project?.etapas)}type="rangeBar" height={350}/>
+        
           <Text my="4" color="gray.300" fontSize="smaller">Status do projeto</Text>
           <Box
             

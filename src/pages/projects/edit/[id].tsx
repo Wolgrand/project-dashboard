@@ -61,7 +61,7 @@ export default function ProjectEdit(){
       avancoPrevisto: response.data.avancoPrevisto,
       avancoReal: response.data.avancoReal,
       updatedBy: response.data.updatedBy,
-      updatedAt: response.data.updateAt,
+      updatedAt: response.data.updatedAt,
       etapas: response.data.etapas,
       status: response.data.status
     }
@@ -91,7 +91,6 @@ export default function ProjectEdit(){
     let updatedProject = {...project}
     updatedProject.etapas[index][field] = value
     updatedProject.updatedBy = user.name
-    updatedProject.updatedAt = new Date()
     console.log(updatedProject)
     setProject(updatedProject)
   }
@@ -100,7 +99,6 @@ export default function ProjectEdit(){
     let updatedProject = {...project}
     updatedProject[field] = value
     updatedProject.updatedBy = user.name
-    updatedProject.updatedAt = new Date()
     console.log(updatedProject)
     setProject(updatedProject)
   }
@@ -109,7 +107,8 @@ export default function ProjectEdit(){
     try {
       setLoading(true)
       const data = project
-      await api.post(`/projects/datalog/${id}`, data)
+      console.log(data)
+      await api.post(`/projects/datalog/register/${id}`, data)
       await api.post(`/projects/${id}`, data).then(response => toast({
         title: "Projeto atualizado com sucesso",
         status: "success",
