@@ -13,7 +13,7 @@ export function getAvancoPrevisto(startDate:any, finishDate:any, statusDate?: an
   const parsedStatusDate = statusDate !== undefined ?  new Date(statusDate?.split('-')[0], statusDate?.split('-')[1]-1, statusDate?.split('-')[2]) : new Date()
   const daysToStatus = differenceInDays(parsedStartDate, parsedStatusDate)
   const daysToFinish = differenceInDays(parsedStartDate, parsedFinishDate)
-  const avancoPrevisto = ((daysToStatus/daysToFinish)*100).toLocaleString('pt-BR', { maximumFractionDigits: 0})
+  const avancoPrevisto = parsedStatusDate > parsedFinishDate ? 100 : ((daysToStatus/daysToFinish)*100).toLocaleString('pt-BR', { maximumFractionDigits: 0})
 
 
   return Number(avancoPrevisto) < 0 ? 0 : Number(avancoPrevisto)>= 100 ? 100 : avancoPrevisto

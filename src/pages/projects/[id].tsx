@@ -310,7 +310,7 @@ export default function ProjectEdit(){
                   {project?.etapas?.map((item, index) => (
                     <Tr key={item.etapa}>
                       <Td>
-                        <Icon as={RiCheckboxBlankCircleFill} color={item.avancoReal >= getAvancoPrevisto(project?.startDate, project?.finishDate, project?.statusDate) ? 'green.500' : 'red.500'} fontSize="16"/>
+                        <Icon as={RiCheckboxBlankCircleFill} color={item.avancoReal >= getAvancoPrevisto(item?.startDate, item?.finishDate, project?.statusDate) ? 'green.500' : 'red.500'} fontSize="16"/>
                       </Td>
                       <Td>
                         {item.etapa}
@@ -362,7 +362,7 @@ export default function ProjectEdit(){
             bg="gray.800"
             
           >
-            <Text p="4" w="4xl" rounded="md" bg="gray.900" fontSize="medium">{project?.status}</Text>
+            <Text p="4" w="full" display="flex" textAlign="justify" rounded="md" bg="gray.900" fontSize="medium">{project?.status}</Text>
           </Box>
         </Box>
       </Flex>
