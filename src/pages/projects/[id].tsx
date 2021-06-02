@@ -1,4 +1,4 @@
-import {Flex, Heading, NumberInputField,  NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Icon, NumberInput, Table, Input, HStack, Tag, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue, useToast, Spinner, Tabs, TabList, Tab, TabPanels, TabPanel} from '@chakra-ui/react'
+import {Flex, Heading, NumberInputField,  NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Icon, NumberInput, Table, Input, HStack, Tag, Button,Box,Text, Stack, SimpleGrid, theme, Thead, Tr, Th, Checkbox, Tbody, Td, useBreakpointValue, useToast, Spinner, Tabs, TabList, Tab, TabPanels, TabPanel, Textarea} from '@chakra-ui/react'
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { RiAddLine, RiArrowLeftRightFill, RiCheckboxBlankCircleFill, RiPencilLine } from 'react-icons/ri';
@@ -289,9 +289,9 @@ export default function ProjectEdit(){
     
           }}>
             <TabList>
-              <Tab _selected={{ color: "pink.500" }}>Entregas</Tab>
-              <Tab _selected={{ color: "pink.500" }}>Linha do Tempo</Tab>
-              <Tab _selected={{ color: "pink.500"}}>Histórico</Tab>
+              <Tab outline='none' _selected={{ color: "pink.500" }}>Entregas</Tab>
+              <Tab outline='none' _selected={{ color: "pink.500" }}>Linha do Tempo</Tab>
+              <Tab outline='none' _selected={{ color: "pink.500"}}>Histórico</Tab>
             </TabList>
             <TabPanels>
               <TabPanel>
@@ -362,7 +362,9 @@ export default function ProjectEdit(){
             bg="gray.800"
             
           >
-            <Text p="4" w="full" display="flex" textAlign="justify" rounded="md" bg="gray.900" fontSize="medium">{project?.status}</Text>
+      
+            <Textarea disabled _disabled={{color:"white"}} display="flex" w="full" h="container.sm" over value={project?.status}  />
+            
           </Box>
         </Box>
       </Flex>

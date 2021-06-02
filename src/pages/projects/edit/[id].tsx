@@ -199,7 +199,7 @@ export default function ProjectEdit(){
             </Thead>
             <Tbody>
                {project?.etapas?.map((item, index) => (
-                <Tr key={item.etapa}>
+                <Tr key={index}>
                   <Td>
                     {item.etapa}
                   </Td>
@@ -221,7 +221,8 @@ export default function ProjectEdit(){
             bg="gray.800"
             
           >
-            <Textarea display="flex" w="full" h="auto" value={project?.status} placeholder="Descreva o status do projeto informando o status de cada etapa..." onChange={e => updateProjectField('status', e.target.value)}  />
+            <Textarea  display="flex" w="full" h="auto" defaultValue={project?.status} placeholder="Descreva o status do projeto informando o status de cada etapa..." onChange={e => updateProjectField('status', e.target.value)}  />
+            
           </Box>
           <Flex mt="8" justify="flex-end">
             <HStack spacing="4">
